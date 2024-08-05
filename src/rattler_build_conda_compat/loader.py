@@ -4,7 +4,7 @@ import itertools
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 
-import yaml
+from ruamel.yaml import YAML
 
 from rattler_build_conda_compat.conditional_list import visit_conditional_list
 
@@ -38,7 +38,7 @@ def _flatten_lists(some_dict: dict[str, Any]) -> dict[str, Any]:
     return result_dict
 
 
-class RecipeLoader(yaml.BaseLoader):
+class RecipeLoader:
     _namespace: dict[str, Any] | None = None
     _allow_missing_selector: bool = False
 
@@ -57,84 +57,97 @@ class RecipeLoader(yaml.BaseLoader):
         finally:
             del cls._namespace
 
+    @classmethod
     def construct_sequence(  # noqa: C901, PLR0912
-        self,
-        node: yaml.ScalarNode | yaml.SequenceNode | yaml.MappingNode,
+        cls,
+        node: Any,
         deep: bool = False,  # noqa: FBT002, FBT001,
-    ) -> list[yaml.ScalarNode]:
+    ) -> list[Any]:
         """deep is True when creating an object/mapping recursively,
         in that case want the underlying elements available during construction
         """
         # find if then else selectors
-        for sequence_idx, child_node in enumerate(node.value[:]):
+        for sequence_idx, child_node in enumerate(node[:]):
             # if then is only present in MappingNode
 
-            if isinstance(child_node, yaml.MappingNode):
+            if isinstance(child_node, dict):
                 # iterate to find if there is IF first
 
                 the_evaluated_one = None
-                for idx, (key_node, value_node) in enumerate(child_node.value):
-                    if key_node.value == "if":
+                for idx, (key, value) in enumerate(child_node.items()):
+                    if key == "if":
                         # we catch the first one, let's try to find next pair of (then | else)
-                        then_node_key, then_node_value = child_node.value[idx + 1]
+                        then_key, then_value = list(child_node.items())[idx + 1]
 
-                        if then_node_key.value != "then":
+                        if then_key != "then":
                             msg = "cannot have if without then, please reformat your variant file"
                             raise ValueError(msg)
 
                         try:
-                            _, else_node_value = child_node.value[idx + 2]
+                            _, else_value = list(child_node.items())[idx + 2]
                         except IndexError:
-                            _, else_node_value = None, None
+                            _, else_value = None, None
 
-                        to_be_eval = f"{value_node.value}"
+                        to_be_eval = f"{value}"
 
-                        if self._allow_missing_selector:
+                        if cls._allow_missing_selector:
                             split_selectors = [
                                 selector
                                 for selector in to_be_eval.split()
                                 if selector not in SELECTOR_OPERATORS
                             ]
                             for selector in split_selectors:
-                                if self._namespace and selector not in self._namespace:
+                                if cls._namespace and selector not in cls._namespace:
                                     cleaned_selector = selector.strip("(").rstrip(")")
-                                    self._namespace[cleaned_selector] = True
+                                    cls._namespace[cleaned_selector] = True
 
-                        evaled = eval(to_be_eval, self._namespace)  # noqa: S307
+                        evaled = eval(to_be_eval, cls._namespace)  # noqa: S307
                         if evaled:
-                            the_evaluated_one = then_node_value
-                        elif else_node_value:
-                            the_evaluated_one = else_node_value
+                            the_evaluated_one = then_value
+                        elif else_value:
+                            the_evaluated_one = else_value
 
                         if the_evaluated_one:
-                            node.value.remove(child_node)
-                            node.value.insert(sequence_idx, the_evaluated_one)
+                            node.remove(child_node)
+                            node.insert(sequence_idx, the_evaluated_one)
                         else:
                             # neither the evaluation or else node is present, so we remove this if
-                            node.value.remove(child_node)
+                            node.remove(child_node)
 
-        if not isinstance(node, yaml.SequenceNode):
+        if not isinstance(node, list):
             raise TypeError(
                 None,
                 None,
-                f"expected a sequence node, but found {node.id!s}",
-                node.start_mark,
+                f"expected a sequence node, but found {type(node)}",
+                None,
             )
 
-        return [self.construct_object(child, deep=deep) for child in node.value]
+        return [cls.construct_object(child, deep=deep) for child in node]
+
+    @classmethod
+    def construct_object(cls, node: Any, deep: bool = False) -> Any:
+        if isinstance(node, dict):
+            return {key: cls.construct_object(value, deep) for key, value in node.items()}
+        elif isinstance(node, list):
+            return cls.construct_sequence(node, deep)
+        else:
+            return node
 
 
 def load_yaml(content: str | bytes) -> Any:  # noqa: ANN401
-    return yaml.load(content, Loader=yaml.BaseLoader)  # noqa: S506
+    yaml = YAML(typ='safe')
+    return yaml.load(content)
 
 
 def parse_recipe_config_file(
     path: PathLike[str], namespace: dict[str, Any] | None, *, allow_missing_selector: bool = False
 ) -> dict[str, Any]:
+    yaml = YAML(typ='safe')
     with open(path) as f, RecipeLoader.with_namespace(
         namespace, allow_missing_selector=allow_missing_selector
     ):
-        content = yaml.load(f, Loader=RecipeLoader)  # noqa: S506
+        content = yaml.load(f)
+        content = RecipeLoader.construct_object(content)
     return _flatten_lists(_remove_empty_keys(content))
 
 

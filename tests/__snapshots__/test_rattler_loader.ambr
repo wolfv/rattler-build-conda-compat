@@ -50,8 +50,8 @@
 # name: test_load_variants
   dict({
     'numpy': list([
-      '1.22',
-      '1.22',
+      1.22,
+      1.22,
     ]),
     'python': list([
       '3.8.* *_cpython',
@@ -62,7 +62,7 @@
       'cpython',
     ]),
     'ruby': list([
-      '2.5',
+      2.5,
     ]),
   })
 # ---

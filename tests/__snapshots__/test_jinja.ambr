@@ -18,9 +18,9 @@
     repository: https://github.com/mamba-org/mamba
     summary: A fast drop-in alternative to conda, using libsolv for dependency resolution
   build:
-    number: '2'
+    number: 2
   context:
-    build_number: '2'
+    build_number: 2
     libmamba_version: 1.5.8
     libmambapy_version: 1.5.8
     mamba_version: 1.5.8
@@ -30,7 +30,7 @@
   - build:
       script:
       - build_mamba.sh
-      - ''
+      - null
     package:
       name: libmamba
       version: 1.5.8
@@ -39,12 +39,12 @@
       - cxx_compiler_stub
       - cmake
       - ninja
-      - ''
+      - null
       host:
       - libsolv >=0.7.23
       - libcurl >=8.4.0
       - fmt
-      - ''
+      - null
       ignore_run_exports:
         by_name:
         - spdlog
@@ -63,7 +63,7 @@
   - build:
       script:
       - build_mamba.sh
-      - ''
+      - null
     package:
       name: libmambapy
       version: 1.5.8
@@ -104,8 +104,8 @@
         - mamba = mamba.mamba:main
       script:
       - build_mamba.sh
-      - ''
-      - ''
+      - null
+      - null
       string: pypython_version_to_build_stringh${{ hash }}_2
     package:
       name: mamba

@@ -135,14 +135,14 @@ class RecipeLoader:
 
 
 def load_yaml(content: str | bytes) -> Any:  # noqa: ANN401
-    yaml = YAML(typ='safe')
+    yaml = YAML(typ="safe")
     return yaml.load(content)
 
 
 def parse_recipe_config_file(
     path: PathLike[str], namespace: dict[str, Any] | None, *, allow_missing_selector: bool = False
 ) -> dict[str, Any]:
-    yaml = YAML(typ='safe')
+    yaml = YAML(typ="safe")
     with open(path) as f, RecipeLoader.with_namespace(
         namespace, allow_missing_selector=allow_missing_selector
     ):

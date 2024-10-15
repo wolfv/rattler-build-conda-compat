@@ -57,7 +57,7 @@ def test_context_rendering(snapshot) -> None:
     assert into_yaml == snapshot
 
 
-def test_multi_source_render() -> None:
+def test_multi_source_render(snapshot) -> None:
     jolt_physics = test_data / "jolt-physics" / "sources.yaml"
     variants = (test_data / "jolt-physics" / "ci_support").glob("*.yaml")
 
@@ -65,4 +65,4 @@ def test_multi_source_render() -> None:
     variants = [load_yaml(variant.read_text()) for variant in variants]
 
     sources = render_all_sources(recipe_yaml, variants)
-    print(sources)
+    assert sources == snapshot

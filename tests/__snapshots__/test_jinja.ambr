@@ -209,6 +209,18 @@
   
   '''
 # ---
+# name: test_multi_source_render
+  set({
+    Source(url='https://all.com', sha256='yyy', md5=None),
+    Source(url='https://foo.com', sha256='679d42a76b82a6dc20ffd9048ab45fb2e5557a526113aaedc7419e12f3cfab38', md5=None),
+    Source(url='https://osx.com/osx-64/foo.zip', sha256='zzz', md5=None),
+    Source(url='https://osx.com/win-64/foo.zip', sha256='zzz', md5=None),
+    Source(url='https://win.com', sha256='xxx', md5=None),
+    Source(url=['https://foo.com/linux-64/zip.zip', 'https://mirror.com/linux-64/zip.zip'], sha256='yyy', md5=None),
+    Source(url=['https://foo.com/osx-64/zip.zip', 'https://mirror.com/osx-64/zip.zip'], sha256='yyy', md5=None),
+    Source(url=['https://foo.com/win-64/zip.zip', 'https://mirror.com/win-64/zip.zip'], sha256='xxx', md5=None),
+  })
+# ---
 # name: test_render_recipe_with_context
   '''
   # yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json

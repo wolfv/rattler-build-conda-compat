@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import sys
 import typing
+from collections.abc import MutableMapping
 from dataclasses import dataclass
 from typing import Any, List, Union
 
-from rattler_build_conda_compat.jinja.jinja import render_recipe_with_context
+from rattler_build_conda_compat.jinja.jinja import RecipeWithContext, render_recipe_with_context
 from rattler_build_conda_compat.loader import _eval_selector
 from rattler_build_conda_compat.variant_config import variant_combinations
 from rattler_build_conda_compat.yaml import convert_to_plain_types
@@ -18,7 +19,8 @@ else:
     pass
 
 if typing.TYPE_CHECKING:
-    from collections.abc import Iterator, Mapping
+    from collections.abc import Iterator
+
 
 OptionalUrlList = Union[str, List[str], None]
 
@@ -32,7 +34,7 @@ class Source:
     def __getitem__(self, key: str) -> str | list[str] | None:
         return self.__dict__[key]
 
-    def __eq__(self, other: Source) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Source):
             return NotImplemented
         return (self.url, self.sha256, self.md5) == (other.url, other.sha256, other.md5)
@@ -41,7 +43,7 @@ class Source:
         return hash((tuple(self.url), self.sha256, self.md5))
 
 
-def get_all_sources(recipe: Mapping[Any, Any]) -> Iterator[Source]:
+def get_all_sources(recipe: MutableMapping[str, Any]) -> Iterator[MutableMapping[str, Any]]:
     """
     Get all sources from the recipe. This can be from a list of sources,
     a single source, or conditional and its branches.
@@ -55,13 +57,22 @@ def get_all_sources(recipe: Mapping[Any, Any]) -> Iterator[Source]:
     A list of source objects.
     """
     sources = recipe.get("source", None)
-    sources = typing.cast(ConditionalList[Source], sources)
+    sources = typing.cast(ConditionalList[MutableMapping[str, Any]], sources)
 
     # Try getting all url top-level sources
     if sources is not None:
         source_list = visit_conditional_list(sources, None)
         for source in source_list:
             yield source
+
+    cache_output = recipe.get("cache", None)
+    if cache_output is not None:
+        sources = cache_output.get("source", None)
+        sources = typing.cast(ConditionalList[MutableMapping[str, Any]], sources)
+        if sources is not None:
+            source_list = visit_conditional_list(sources, None)
+            for source in source_list:
+                yield source
 
     outputs = recipe.get("outputs", None)
     if outputs is None:
@@ -70,7 +81,7 @@ def get_all_sources(recipe: Mapping[Any, Any]) -> Iterator[Source]:
     outputs = visit_conditional_list(outputs, None)
     for output in outputs:
         sources = output.get("source", None)
-        sources = typing.cast(ConditionalList[Source], sources)
+        sources = typing.cast(ConditionalList[MutableMapping[str, Any]], sources)
         if sources is None:
             continue
         source_list = visit_conditional_list(sources, None)
@@ -78,7 +89,7 @@ def get_all_sources(recipe: Mapping[Any, Any]) -> Iterator[Source]:
             yield source
 
 
-def get_all_url_sources(recipe: Mapping[Any, Any]) -> Iterator[str]:
+def get_all_url_sources(recipe: MutableMapping[str, Any]) -> Iterator[str]:
     """
     Get all url sources from the recipe. This can be from a list of sources,
     a single source, or conditional and its branches.
@@ -92,7 +103,7 @@ def get_all_url_sources(recipe: Mapping[Any, Any]) -> Iterator[str]:
     A list of URLs.
     """
 
-    def get_first_url(source: Mapping[str, Any]) -> str:
+    def get_first_url(source: MutableMapping[str, Any]) -> str:
         if isinstance(source["url"], list):
             return source["url"][0]
         return source["url"]
@@ -101,8 +112,8 @@ def get_all_url_sources(recipe: Mapping[Any, Any]) -> Iterator[str]:
 
 
 def render_all_sources(
-    recipe: Mapping[Any, Any],
-    variants: [Mapping[Any, Any]],
+    recipe: RecipeWithContext,
+    variants: list[dict[str, str | list[str]]],
     override_version: str | None = None,
 ) -> set[Source]:
     """
@@ -123,7 +134,8 @@ def render_all_sources(
                     sources = [sources]
 
                 for elem in visit_conditional_list(
-                    sources, lambda x, combination=combination: _eval_selector(x, combination)
+                    sources,
+                    lambda x, combination=combination: _eval_selector(x, combination),  # type: ignore(misc)
                 ):
                     if "url" in elem:
                         plain_elem = convert_to_plain_types(elem)

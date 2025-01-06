@@ -1,3 +1,7 @@
+context:
+  name: foobar
+  version: 1.2.3
+
 package:
   name: jolt-physics
   version: 0.0.1
@@ -16,6 +20,8 @@ source:
       url: https://osx.com/${{ target_platform }}/foo.zip
       sha256: zzz
   - url: https://all.com
+    sha256: yyy
+  - url: https://all.com/${{ name }}/${{ version }}.zip
     sha256: yyy
   - url: ["https://foo.com/${{ target_platform }}/zip.zip", "https://mirror.com/${{ target_platform }}/zip.zip"]
     sha256: ${{ "xxx" if win else "yyy" }}

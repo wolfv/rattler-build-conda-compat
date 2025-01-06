@@ -6,7 +6,7 @@ from collections.abc import MutableMapping
 from dataclasses import dataclass
 from typing import Any, List, Union
 
-from rattler_build_conda_compat.jinja.jinja import RecipeWithContext, render_recipe_with_context
+from rattler_build_conda_compat.jinja.jinja import RecipeWithContext, render_recipe_with_context, jinja_env, load_recipe_context
 from rattler_build_conda_compat.loader import _eval_selector
 from rattler_build_conda_compat.variant_config import variant_combinations
 from rattler_build_conda_compat.yaml import convert_to_plain_types
@@ -28,6 +28,8 @@ OptionalUrlList = Union[str, List[str], None]
 @dataclass(frozen=True)
 class Source:
     url: str | list[str]
+    template: str | list[str]
+    context: dict[str, str] | None = None
     sha256: str | None = None
     md5: str | None = None
 
@@ -119,6 +121,14 @@ def render_all_sources(
     """
     This function should render _all_ URL sources with the
     """
+
+    def render(template: str | list[str], context: dict[str, str]) -> str:
+        if isinstance(template, list):
+            return [render(t, context) for t in template]
+        template = env.from_string(template)
+        rendered_content = template.render(context_variables)
+        return rendered_content
+
     if override_version is not None:
         recipe["context"]["version"] = override_version
 
@@ -126,9 +136,14 @@ def render_all_sources(
     for v in variants:
         combinations = variant_combinations(v)
         for combination in combinations:
-            rendered = render_recipe_with_context(recipe, combination)
+            env = jinja_env(combination)
+
+            context = recipe.get("context", {})
+            # render out the context section and retrieve dictionary
+            context_variables = load_recipe_context(context, env)
+
             # now evaluate the if / else statements
-            sources = rendered.get("source")
+            sources = recipe.get("source")
             if sources:
                 if not isinstance(sources, list):
                     sources = [sources]
@@ -140,9 +155,11 @@ def render_all_sources(
                     if "url" in elem:
                         plain_elem = convert_to_plain_types(elem)
                         as_url = Source(
-                            url=plain_elem["url"],
+                            url=render(plain_elem["url"], context_variables),
+                            template=plain_elem["url"],
                             sha256=plain_elem.get("sha256"),
                             md5=plain_elem.get("md5"),
+                            context=context_variables,
                         )
                         final_sources.add(as_url)
 

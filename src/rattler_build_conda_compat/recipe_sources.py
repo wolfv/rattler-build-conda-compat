@@ -135,7 +135,7 @@ def render_all_sources(
 
                 for elem in visit_conditional_list(
                     sources,
-                    lambda x, combination=combination: _eval_selector(x, combination),  # type: ignore(misc)
+                    lambda x, combination=combination: _eval_selector(x, combination),  # type: ignore[misc]
                 ):
                     if "url" in elem:
                         plain_elem = convert_to_plain_types(elem)

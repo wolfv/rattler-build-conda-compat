@@ -1,12 +1,13 @@
+from __future__ import annotations
 
 from itertools import product
-from typing import List, Mapping
 
-def variant_combinations(data) -> List[Mapping[str, str]]:
+
+def variant_combinations(data: dict[str, str | list[str]]) -> list[dict[str, str]]:
     zip_keys = data.pop("zip_keys", [])
     # Separate the keys that need to be zipped from the rest
     zip_keys_flat = [item for sublist in zip_keys for item in sublist]
-    other_keys = [key for key in data.keys() if key not in zip_keys_flat]
+    other_keys = [key for key in data if key not in zip_keys_flat]
 
     # Create combinations for non-zipped keys
     other_combinations = list(product(*[data[key] for key in other_keys]))
@@ -32,4 +33,3 @@ def variant_combinations(data) -> List[Mapping[str, str]]:
             final_combinations.append(combined)
 
     return final_combinations
-

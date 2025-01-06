@@ -9,8 +9,8 @@ source:
   url: https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v${{ version }}.zip
   sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
 
-requirements: 
-  build: 
+requirements:
+  build:
     - ${{ compiler("cxx") }}
     - ${{ stdlib("c") }}
     - cmake
@@ -54,7 +54,7 @@ about:
   license: MIT
   license_file: LICENSE
   summary: A multi core friendly rigid body physics and collision detection library.
-  description: A multi core friendly rigid body physics and collision detection library. Written in C++. Suitable for games and VR applications. Used by Horizon Forbidden West. 
+  description: A multi core friendly rigid body physics and collision detection library. Written in C++. Suitable for games and VR applications. Used by Horizon Forbidden West.
   documentation: https://jrouwe.github.io/JoltPhysics/
   repository: https://github.com/jrouwe/JoltPhysics
 

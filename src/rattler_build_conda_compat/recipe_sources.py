@@ -4,9 +4,13 @@ import sys
 import typing
 from collections.abc import MutableMapping
 from dataclasses import dataclass
-from typing import Any, List, Union
+from typing import Any, List, Union, cast
 
-from rattler_build_conda_compat.jinja.jinja import RecipeWithContext, render_recipe_with_context, jinja_env, load_recipe_context
+from rattler_build_conda_compat.jinja.jinja import (
+    RecipeWithContext,
+    jinja_env,
+    load_recipe_context,
+)
 from rattler_build_conda_compat.loader import _eval_selector
 from rattler_build_conda_compat.variant_config import variant_combinations
 from rattler_build_conda_compat.yaml import convert_to_plain_types
@@ -122,12 +126,11 @@ def render_all_sources(
     This function should render _all_ URL sources with the
     """
 
-    def render(template: str | list[str], context: dict[str, str]) -> str:
+    def render(template: str | list[str], context: dict[str, str]) -> str | list[str]:
         if isinstance(template, list):
-            return [render(t, context) for t in template]
+            return [cast(str, render(t, context)) for t in template]
         template = env.from_string(template)
-        rendered_content = template.render(context_variables)
-        return rendered_content
+        return template.render(context_variables)
 
     if override_version is not None:
         recipe["context"]["version"] = override_version

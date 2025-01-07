@@ -1,0 +1,47 @@
+# serializer version: 1
+# name: test_variant_config
+  list([
+    dict({
+      'libawk': '1.2.3',
+      'liboost': '1.2.3',
+      'numpy': '1.22',
+      'python': '3.8.* *_cpython',
+      'python_impl': 'cpython',
+    }),
+    dict({
+      'libawk': '1.2.3',
+      'liboost': '1.2.3',
+      'numpy': '1.23',
+      'python': '3.9.* *_cpython',
+      'python_impl': 'cpython',
+    }),
+    dict({
+      'libawk': '1.2.3',
+      'liboost': '1.2.3',
+      'numpy': '1.24',
+      'python': '3.10.* *_cpython',
+      'python_impl': 'cpython',
+    }),
+    dict({
+      'libawk': '1.2.3',
+      'liboost': '0.10',
+      'numpy': '1.22',
+      'python': '3.8.* *_cpython',
+      'python_impl': 'cpython',
+    }),
+    dict({
+      'libawk': '1.2.3',
+      'liboost': '0.10',
+      'numpy': '1.23',
+      'python': '3.9.* *_cpython',
+      'python_impl': 'cpython',
+    }),
+    dict({
+      'libawk': '1.2.3',
+      'liboost': '0.10',
+      'numpy': '1.24',
+      'python': '3.10.* *_cpython',
+      'python_impl': 'cpython',
+    }),
+  ])
+# ---

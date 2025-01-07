@@ -4,12 +4,12 @@ import copy
 import hashlib
 import logging
 import re
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, MutableMapping
 
 import requests
 
 from rattler_build_conda_compat.jinja.jinja import jinja_env, load_recipe_context
-from rattler_build_conda_compat.recipe_sources import Source, get_all_sources
+from rattler_build_conda_compat.recipe_sources import get_all_sources
 from rattler_build_conda_compat.yaml import _dump_yaml_to_string, _yaml_object
 
 if TYPE_CHECKING:
@@ -90,7 +90,7 @@ def _has_jinja_version(url: str) -> bool:
     return re.search(pattern, url) is not None
 
 
-def update_hash(source: Source, url: str, hash_: Hash | None) -> None:
+def update_hash(source: MutableMapping[str, Any], url: str, hash_: Hash | None) -> None:
     """
     Update the sha256 hash in the source dictionary.
 

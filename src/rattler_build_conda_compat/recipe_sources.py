@@ -12,7 +12,6 @@ from rattler_build_conda_compat.jinja.jinja import (
 )
 from rattler_build_conda_compat.loader import _eval_selector
 from rattler_build_conda_compat.variant_config import variant_combinations
-from rattler_build_conda_compat.yaml import convert_to_plain_types
 
 from .conditional_list import ConditionalList, visit_conditional_list
 
@@ -113,11 +112,13 @@ def get_all_url_sources(recipe: MutableMapping[str, Any]) -> Iterator[str]:
 
 def render_all_sources(
     recipe: RecipeWithContext,
-    variants: list[dict[str, str | list[str]]],
+    variants: list[dict[str, list[str]]],
     override_version: str | None = None,
 ) -> set[Source]:
     """
-    This function should render _all_ URL sources with the
+    This function should render _all_ URL sources from the given recipe and with the given variants.
+    Variants can be loaded with the `variant_config.variant_combinations` module.
+    Optionally, you can override the version in the recipe context to render URLs with a different version.
     """
 
     def render(template: str | list[str], context: dict[str, str]) -> str | list[str]:
@@ -149,13 +150,14 @@ def render_all_sources(
                     sources,
                     lambda x, combination=combination: _eval_selector(x, combination),  # type: ignore[misc]
                 ):
-                    if "url" in elem:
-                        plain_elem = convert_to_plain_types(elem)
+                    # we need to explicitly cast here
+                    elem_dict = typing.cast(dict[str, Any], elem)
+                    if "url" in elem_dict:
                         as_url = Source(
-                            url=render(plain_elem["url"], context_variables),
-                            template=plain_elem["url"],
-                            sha256=plain_elem.get("sha256"),
-                            md5=plain_elem.get("md5"),
+                            url=render(elem_dict["url"], context_variables),
+                            template=elem_dict["url"],
+                            sha256=elem_dict.get("sha256"),
+                            md5=elem_dict.get("md5"),
                             context=context_variables,
                         )
                         final_sources.add(as_url)

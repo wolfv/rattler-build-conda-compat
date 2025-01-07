@@ -3,7 +3,19 @@ from __future__ import annotations
 from itertools import product
 
 
-def variant_combinations(data: dict[str, str | list[str]]) -> list[dict[str, str]]:
+def variant_combinations(data: dict[str, list[str]]) -> list[dict[str, str]]:
+    """
+    This function takes a "variant" configuration dictionary that gets expanded into multiple build matrices.
+
+    Arguments:
+    ----------
+    * `data` - A dictionary with keys as the variant names and values as the possible values.
+    * `zip_keys` - A list of lists of keys that should be zipped together.
+
+    Returns:
+    --------
+    A list of dictionaries that represent the different combinations of the variant configuration
+    """
     zip_keys = data.pop("zip_keys", [])
     # Separate the keys that need to be zipped from the rest
     zip_keys_flat = [item for sublist in zip_keys for item in sublist]

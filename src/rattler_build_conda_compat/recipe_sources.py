@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import typing
 from collections.abc import MutableMapping
 from dataclasses import dataclass
@@ -16,11 +15,6 @@ from rattler_build_conda_compat.variant_config import variant_combinations
 from rattler_build_conda_compat.yaml import convert_to_plain_types
 
 from .conditional_list import ConditionalList, visit_conditional_list
-
-if sys.version_info < (3, 11):
-    pass
-else:
-    pass
 
 if typing.TYPE_CHECKING:
     from collections.abc import Iterator

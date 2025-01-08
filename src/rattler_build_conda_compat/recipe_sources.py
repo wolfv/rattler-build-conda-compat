@@ -154,7 +154,9 @@ def render_all_sources(  # noqa: C901
                     elem_dict = typing.cast(dict[str, Any], elem)
                     sha256, md5 = None, None
                     if elem_dict.get("sha256") is not None:
-                        sha256 = typing.cast(str, render(str(elem_dict["sha256"]), context_variables))
+                        sha256 = typing.cast(
+                            str, render(str(elem_dict["sha256"]), context_variables)
+                        )
                     if elem_dict.get("md5") is not None:
                         md5 = typing.cast(str, render(str(elem_dict["md5"]), context_variables))
                     if "url" in elem_dict:

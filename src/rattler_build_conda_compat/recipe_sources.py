@@ -156,8 +156,8 @@ def render_all_sources(
                         as_url = Source(
                             url=render(elem_dict["url"], context_variables),
                             template=elem_dict["url"],
-                            sha256=elem_dict.get("sha256"),
-                            md5=elem_dict.get("md5"),
+                            sha256=render(elem_dict.get("sha256"), context_variables),
+                            md5=render(elem_dict.get("md5"), context_variables),
                             context=context_variables,
                         )
                         final_sources.add(as_url)

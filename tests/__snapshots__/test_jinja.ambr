@@ -217,9 +217,9 @@
     Source(url='https://osx.com/osx-64/foo.zip', template='https://osx.com/${{ target_platform }}/foo.zip', context={'name': 'foobar', 'version': '1.2.3'}, sha256='zzz', md5=None),
     Source(url='https://osx.com/win-64/foo.zip', template='https://osx.com/${{ target_platform }}/foo.zip', context={'name': 'foobar', 'version': '1.2.3'}, sha256='zzz', md5=None),
     Source(url='https://win.com', template='https://win.com', context={'name': 'foobar', 'version': '1.2.3'}, sha256='xxx', md5=None),
-    Source(url=['https://foo.com/linux-64/zip.zip', 'https://mirror.com/linux-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='${{ "xxx" if win else "yyy" }}', md5=None),
-    Source(url=['https://foo.com/osx-64/zip.zip', 'https://mirror.com/osx-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='${{ "xxx" if win else "yyy" }}', md5=None),
-    Source(url=['https://foo.com/win-64/zip.zip', 'https://mirror.com/win-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='${{ "xxx" if win else "yyy" }}', md5=None),
+    Source(url=['https://foo.com/linux-64/zip.zip', 'https://mirror.com/linux-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
+    Source(url=['https://foo.com/osx-64/zip.zip', 'https://mirror.com/osx-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
+    Source(url=['https://foo.com/win-64/zip.zip', 'https://mirror.com/win-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='xxx', md5=None),
   })
 # ---
 # name: test_render_recipe_with_context

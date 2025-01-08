@@ -110,7 +110,7 @@ def get_all_url_sources(recipe: MutableMapping[str, Any]) -> Iterator[str]:
     return (get_first_url(source) for source in get_all_sources(recipe) if "url" in source)
 
 
-def render_all_sources(
+def render_all_sources(  # noqa: C901
     recipe: RecipeWithContext,
     variants: list[dict[str, list[str]]],
     override_version: str | None = None,
@@ -152,12 +152,19 @@ def render_all_sources(
                 ):
                     # we need to explicitly cast here
                     elem_dict = typing.cast(dict[str, Any], elem)
+                    sha256, md5 = None, None
+                    if elem_dict.get("sha256") is not None:
+                        sha256 = typing.cast(
+                            str, render(str(elem_dict["sha256"]), context_variables)
+                        )
+                    if elem_dict.get("md5") is not None:
+                        md5 = typing.cast(str, render(str(elem_dict["md5"]), context_variables))
                     if "url" in elem_dict:
                         as_url = Source(
                             url=render(elem_dict["url"], context_variables),
                             template=elem_dict["url"],
-                            sha256=elem_dict.get("sha256"),
-                            md5=elem_dict.get("md5"),
+                            sha256=sha256,
+                            md5=md5,
                             context=context_variables,
                         )
                         final_sources.add(as_url)

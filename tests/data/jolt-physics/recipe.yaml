@@ -15,6 +15,9 @@ requirements:
     - ${{ stdlib("c") }}
     - cmake
     - ninja
+  host:
+    - ${{ pin_compatible('cmake') }}
+    - ${{ pin_subpackage(jolt_physics) }}
 
 build:
   number: 0

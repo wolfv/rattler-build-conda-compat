@@ -34,6 +34,9 @@
           - c_stdlib_stub
           - cmake
           - ninja
+        host:
+          - compatible_pin cmake
+          - subpackage_pin ${{ jolt_physics }}
   
       build:
         number: 0
@@ -97,6 +100,9 @@
           - c_stdlib_stub
           - cmake
           - ninja
+        host:
+          - compatible_pin cmake
+          - subpackage_pin ${{ jolt_physics }}
   
       build:
         number: 0
@@ -160,6 +166,9 @@
           - c_stdlib_stub
           - cmake
           - ninja
+        host:
+          - compatible_pin cmake
+          - subpackage_pin ${{ jolt_physics }}
   
       build:
         number: 0

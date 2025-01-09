@@ -25,8 +25,12 @@
         version: 5.1.0
   
       source:
-        url: https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.1.0.zip
-        sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
+        - url: https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.1.0.zip
+          sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
+        - if: win
+          then:
+            url: https://win.com/jolt-physics.zip
+            sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
   
       requirements:
         build:
@@ -91,8 +95,12 @@
         version: 5.1.0
   
       source:
-        url: https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.1.0.zip
-        sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
+        - url: https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.1.0.zip
+          sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
+        - if: win
+          then:
+            url: https://win.com/jolt-physics.zip
+            sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
   
       requirements:
         build:
@@ -157,8 +165,12 @@
         version: 5.1.0
   
       source:
-        url: https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.1.0.zip
-        sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
+        - url: https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.1.0.zip
+          sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
+        - if: win
+          then:
+            url: https://win.com/jolt-physics.zip
+            sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
   
       requirements:
         build:

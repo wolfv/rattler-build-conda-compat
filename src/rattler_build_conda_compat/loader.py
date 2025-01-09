@@ -43,6 +43,20 @@ def load_yaml(content: str) -> Any:  # noqa: ANN401
         return yaml.load(f)
 
 
+class UndefinedDictWrapper:
+    """
+    A wrapper around a dictionary that returns False for missing keys.
+    """
+
+    def __init__(self, data: dict[str, Any]) -> None:
+        self.data = data
+
+    def __getitem__(self, key: str) -> Any:  # noqa: ANN401
+        if key not in self.data:
+            return False
+        return self.data[key]
+
+
 def _eval_selector(
     condition: str, namespace: dict[str, Any], *, allow_missing_selector: bool = False
 ) -> bool:
@@ -57,7 +71,7 @@ def _eval_selector(
                 cleaned_selector = selector.strip("(").rstrip(")")
                 namespace[cleaned_selector] = True
 
-    return eval(condition, namespace)  # noqa: S307
+    return eval(condition, {}, UndefinedDictWrapper(namespace))  # noqa: S307
 
 
 def _render_recipe(

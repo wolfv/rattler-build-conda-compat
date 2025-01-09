@@ -19,6 +19,9 @@ requirements:
     - ${{ stdlib("c") }}
     - cmake
     - ninja
+    - if: cuda
+      then:
+        - cuda-compiler
   host:
     - ${{ pin_compatible('cmake') }}
     - ${{ pin_subpackage(jolt_physics) }}

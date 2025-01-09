@@ -148,7 +148,7 @@ def render_all_sources(  # noqa: C901
 
                 for elem in visit_conditional_list(
                     sources,
-                    lambda x, combination=combination: _eval_selector(x, combination),  # type: ignore[misc]
+                    lambda x, combination=env.globals: _eval_selector(x, combination),  # type: ignore[misc]
                 ):
                     # we need to explicitly cast here
                     elem_dict = typing.cast(dict[str, Any], elem)

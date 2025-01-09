@@ -67,6 +67,7 @@ def test_multi_source_render(snapshot) -> None:
     sources = render_all_sources(recipe_yaml, variants)
     assert sources == snapshot
 
+
 def test_conditional_source_render(snapshot) -> None:
     jolt_physics = test_data / "conditional_sources.yaml"
     # reuse the ci_support variants

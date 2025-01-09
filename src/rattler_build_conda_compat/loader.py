@@ -71,7 +71,7 @@ def _eval_selector(
                 cleaned_selector = selector.strip("(").rstrip(")")
                 namespace[cleaned_selector] = True
 
-    return eval(condition, {}, UndefinedDictWrapper(namespace))  # noqa: S307
+    return eval(condition, {}, UndefinedDictWrapper(namespace))  # type: ignore[arg-type] # noqa: S307
 
 
 def _render_recipe(

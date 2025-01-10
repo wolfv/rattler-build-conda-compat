@@ -1,4 +1,12 @@
 # serializer version: 1
+# name: test_conditional_source_render
+  set({
+    Source(url='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_3.24.11.1-linux.tar.gz', template='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_${{ blpapicpp_linux_version }}-linux.tar.gz', context={'name': 'blpapi', 'version': '3.24.11', 'blpapicpp_linux_version': '3.24.11.1', 'blpapicpp_win_version': '3.24.11.1', 'blpapicpp_osx_version': '3.24.11.1'}, sha256='eb1a9aa834a969a8ccbbb04061274623659a1fb273abda4413b47fe59e7ee412', md5=None),
+    Source(url='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_3.24.11.1-macos-arm64.tar.gz', template='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_${{ blpapicpp_osx_version }}-macos-arm64.tar.gz', context={'name': 'blpapi', 'version': '3.24.11', 'blpapicpp_linux_version': '3.24.11.1', 'blpapicpp_win_version': '3.24.11.1', 'blpapicpp_osx_version': '3.24.11.1'}, sha256='fa96331edf06dd2342cb27771367516296067e94961ec6e600add1c2eed9c41d', md5=None),
+    Source(url='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_3.24.11.1-windows.zip', template='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_${{ blpapicpp_win_version }}-windows.zip', context={'name': 'blpapi', 'version': '3.24.11', 'blpapicpp_linux_version': '3.24.11.1', 'blpapicpp_win_version': '3.24.11.1', 'blpapicpp_osx_version': '3.24.11.1'}, sha256='e63c0b75d50097194c425489a08cec9c0374ab7b8eafe5b015c076bb2432fa19', md5=None),
+    Source(url='https://blpapi.bloomberg.com/repository/releases/python/blpapi-3.24.11.tar.gz', template='https://blpapi.bloomberg.com/repository/releases/python/${{ name }}-${{ version }}.tar.gz', context={'name': 'blpapi', 'version': '3.24.11', 'blpapicpp_linux_version': '3.24.11.1', 'blpapicpp_win_version': '3.24.11.1', 'blpapicpp_osx_version': '3.24.11.1'}, sha256='94dc699df262187b3afe4f163526aac67fb5982b008efe851836e9f1cd5358c1', md5=None),
+  })
+# ---
 # name: test_context_rendering
   '''
   context:
@@ -38,6 +46,9 @@
           - c_stdlib_stub
           - cmake
           - ninja
+          - if: cuda
+            then:
+              - cuda-compiler
         host:
           - compatible_pin cmake
           - subpackage_pin ${{ jolt_physics }}
@@ -108,6 +119,9 @@
           - c_stdlib_stub
           - cmake
           - ninja
+          - if: cuda
+            then:
+              - cuda-compiler
         host:
           - compatible_pin cmake
           - subpackage_pin ${{ jolt_physics }}
@@ -178,6 +192,82 @@
           - c_stdlib_stub
           - cmake
           - ninja
+          - if: cuda
+            then:
+              - cuda-compiler
+        host:
+          - compatible_pin cmake
+          - subpackage_pin ${{ jolt_physics }}
+  
+      build:
+        number: 0
+        script:
+          - if: win
+            then: |
+              cmake -GNinja ^
+                  %CMAKE_ARGS% ^
+                  -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
+                  -DBUILD_SHARED_LIBS=ON ^
+                  -DCMAKE_BUILD_TYPE=Distribution ^
+                  -DCROSS_PLATFORM_DETERMINISTIC=ON ^
+                  -DTARGET_VIEWER=OFF ^
+                  -DTARGET_SAMPLES=OFF ^
+                  -DTARGET_HELLO_WORLD=OFF ^
+                  -DTARGET_UNIT_TESTS=OFF ^
+                  -DTARGET_PERFORMANCE_TEST=OFF ^
+                  -S %SRC_DIR%\Build
+              cmake --build . --target install
+            else: |
+              cmake -GNinja \
+                  $CMAKE_ARGS \
+                  -DCMAKE_INSTALL_PREFIX=$PREFIX \
+                  -DBUILD_SHARED_LIBS=ON \
+                  -DCMAKE_BUILD_TYPE=Distribution \
+                  -DCROSS_PLATFORM_DETERMINISTIC=ON \
+                  -DTARGET_VIEWER=OFF \
+                  -DTARGET_SAMPLES=OFF \
+                  -DTARGET_HELLO_WORLD=OFF \
+                  -DTARGET_UNIT_TESTS=OFF \
+                  -DTARGET_PERFORMANCE_TEST=OFF \
+                  -S $SRC_DIR/Build
+              cmake --build . --target install
+  
+      about:
+        homepage: https://github.com/jrouwe/JoltPhysics
+        license: MIT
+        license_file: LICENSE
+        summary: A multi core friendly rigid body physics and collision detection library.
+        description: A multi core friendly rigid body physics and collision detection library. Written in C++. Suitable for games and VR applications. Used by Horizon Forbidden West.
+        documentation: https://jrouwe.github.io/JoltPhysics/
+        repository: https://github.com/jrouwe/JoltPhysics
+  
+      extra:
+        recipe-maintainers:
+          - baszalmstra
+    - context:
+        version: 5.1.0
+  
+      package:
+        name: jolt-physics
+        version: 5.1.0
+  
+      source:
+        - url: https://github.com/jrouwe/JoltPhysics/archive/refs/tags/v5.1.0.zip
+          sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
+        - if: win
+          then:
+            url: https://win.com/jolt-physics.zip
+            sha256: 10fcc863ae2b9d48c2f22d8b0204034820e57a55f858b7c388ac9579d8cf4095
+  
+      requirements:
+        build:
+          - cxx_compiler_stub
+          - c_stdlib_stub
+          - cmake
+          - ninja
+          - if: cuda
+            then:
+              - cuda-compiler
         host:
           - compatible_pin cmake
           - subpackage_pin ${{ jolt_physics }}
@@ -240,6 +330,7 @@
     Source(url='https://win.com', template='https://win.com', context={'name': 'foobar', 'version': '1.2.3'}, sha256='xxx', md5=None),
     Source(url=['https://foo.com/linux-64/zip.zip', 'https://mirror.com/linux-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
     Source(url=['https://foo.com/osx-64/zip.zip', 'https://mirror.com/osx-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
+    Source(url=['https://foo.com/osx-arm64/zip.zip', 'https://mirror.com/osx-arm64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
     Source(url=['https://foo.com/win-64/zip.zip', 'https://mirror.com/win-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='xxx', md5=None),
   })
 # ---

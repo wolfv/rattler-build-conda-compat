@@ -1,0 +1,23 @@
+# serializer version: 1
+# name: test_conditional_source_render
+  set({
+    Source(url='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_3.24.11.1-linux.tar.gz', template='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_${{ blpapicpp_linux_version }}-linux.tar.gz', context={'name': 'blpapi', 'version': '3.24.11', 'blpapicpp_linux_version': '3.24.11.1', 'blpapicpp_win_version': '3.24.11.1', 'blpapicpp_osx_version': '3.24.11.1'}, sha256='eb1a9aa834a969a8ccbbb04061274623659a1fb273abda4413b47fe59e7ee412', md5=None),
+    Source(url='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_3.24.11.1-macos-arm64.tar.gz', template='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_${{ blpapicpp_osx_version }}-macos-arm64.tar.gz', context={'name': 'blpapi', 'version': '3.24.11', 'blpapicpp_linux_version': '3.24.11.1', 'blpapicpp_win_version': '3.24.11.1', 'blpapicpp_osx_version': '3.24.11.1'}, sha256='fa96331edf06dd2342cb27771367516296067e94961ec6e600add1c2eed9c41d', md5=None),
+    Source(url='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_3.24.11.1-windows.zip', template='https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_${{ blpapicpp_win_version }}-windows.zip', context={'name': 'blpapi', 'version': '3.24.11', 'blpapicpp_linux_version': '3.24.11.1', 'blpapicpp_win_version': '3.24.11.1', 'blpapicpp_osx_version': '3.24.11.1'}, sha256='e63c0b75d50097194c425489a08cec9c0374ab7b8eafe5b015c076bb2432fa19', md5=None),
+    Source(url='https://blpapi.bloomberg.com/repository/releases/python/blpapi-3.24.11.tar.gz', template='https://blpapi.bloomberg.com/repository/releases/python/${{ name }}-${{ version }}.tar.gz', context={'name': 'blpapi', 'version': '3.24.11', 'blpapicpp_linux_version': '3.24.11.1', 'blpapicpp_win_version': '3.24.11.1', 'blpapicpp_osx_version': '3.24.11.1'}, sha256='94dc699df262187b3afe4f163526aac67fb5982b008efe851836e9f1cd5358c1', md5=None),
+  })
+# ---
+# name: test_multi_source_render
+  set({
+    Source(url='https://all.com', template='https://all.com', context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
+    Source(url='https://all.com/foobar/1.2.3.zip', template='https://all.com/${{ name }}/${{ version }}.zip', context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
+    Source(url='https://foo.com', template='https://foo.com', context={'name': 'foobar', 'version': '1.2.3'}, sha256='679d42a76b82a6dc20ffd9048ab45fb2e5557a526113aaedc7419e12f3cfab38', md5=None),
+    Source(url='https://osx.com/osx-64/foo.zip', template='https://osx.com/${{ target_platform }}/foo.zip', context={'name': 'foobar', 'version': '1.2.3'}, sha256='zzz', md5=None),
+    Source(url='https://osx.com/win-64/foo.zip', template='https://osx.com/${{ target_platform }}/foo.zip', context={'name': 'foobar', 'version': '1.2.3'}, sha256='zzz', md5=None),
+    Source(url='https://win.com', template='https://win.com', context={'name': 'foobar', 'version': '1.2.3'}, sha256='xxx', md5=None),
+    Source(url=['https://foo.com/linux-64/zip.zip', 'https://mirror.com/linux-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
+    Source(url=['https://foo.com/osx-64/zip.zip', 'https://mirror.com/osx-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
+    Source(url=['https://foo.com/osx-arm64/zip.zip', 'https://mirror.com/osx-arm64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='yyy', md5=None),
+    Source(url=['https://foo.com/win-64/zip.zip', 'https://mirror.com/win-64/zip.zip'], template=['https://foo.com/${{ target_platform }}/zip.zip', 'https://mirror.com/${{ target_platform }}/zip.zip'], context={'name': 'foobar', 'version': '1.2.3'}, sha256='xxx', md5=None),
+  })
+# ---

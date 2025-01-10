@@ -6,6 +6,8 @@ import pytest
 from rattler_build_conda_compat.loader import load_yaml
 from rattler_build_conda_compat.recipe_sources import get_all_url_sources, render_all_sources
 
+test_data = Path(__file__).parent / "data"
+
 
 @pytest.mark.parametrize(
     ("partial_recipe", "expected_output"),
@@ -26,15 +28,25 @@ def test_recipe_sources(partial_recipe: str, expected_output: list[str]) -> None
     assert list(get_all_url_sources(recipe)) == expected_output
 
 
-def test_recipe_source_rendering() -> None:
-    """Test that the recipe sources are correctly rendered"""
-    folder = Path(f"{Path(__file__).parent}/data/jolt-physics")
-    path = folder / "recipe.yaml"
-    variants = (folder / "ci_support").glob("*.yaml")
+def test_multi_source_render(snapshot) -> None:
+    jolt_physics = test_data / "jolt-physics" / "sources.yaml"
+    variants = (test_data / "jolt-physics" / "ci_support").glob("*.yaml")
 
-    recipe = load_yaml(path.read_text())
-    # load all variants
+    recipe_yaml = load_yaml(jolt_physics.read_text())
     variants = [load_yaml(variant.read_text()) for variant in variants]
 
-    rendered_sources = render_all_sources(recipe, variants)
-    print(rendered_sources)
+    sources = render_all_sources(recipe_yaml, variants)
+    assert sources == snapshot
+
+
+def test_conditional_source_render(snapshot) -> None:
+    jolt_physics = test_data / "conditional_sources.yaml"
+    # reuse the ci_support variants
+    variants = (test_data / "jolt-physics" / "ci_support").glob("*.yaml")
+
+    recipe_yaml = load_yaml(jolt_physics.read_text())
+    variants = [load_yaml(variant.read_text()) for variant in variants]
+
+    sources = render_all_sources(recipe_yaml, variants)
+    assert len(sources) == 4
+    assert sources == snapshot
